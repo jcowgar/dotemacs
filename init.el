@@ -29,6 +29,24 @@
 (show-paren-mode 1)
 (tool-bar-mode 0)
 
+;;; Scrolling
+(set-scroll-bar-mode 'right)
+(setq scroll-margin 0
+      scroll-conservatively 100000
+      scroll-preserve-screen-position 1)
+;; Page down/up move the point, not the screen.
+;; In practice, this means that they can move the
+;; point to the beginning or end of the buffer.
+(global-set-key [next]
+		(lambda () (interactive)
+		  (condition-case nil (scroll-up)
+		    (end-of-buffer (goto-char (point-max))))))
+
+(global-set-key [prior]
+		(lambda () (interactive)
+		  (condition-case nil (scroll-down)
+		    (beginning-of-buffer (goto-char (point-min))))))
+
 ;;; (ido-mode 1) ; First few days use just couldn't get use to it.
 (setq show-trailing-whitespace t)
 (setq indicate-empty-lines t)
@@ -40,9 +58,47 @@
 (global-hl-line-mode t)
 (set-face-background 'hl-line "#eff")
 
+(delete-selection-mode)
+
+;; Redefine the Home/End keys to (nearly) the same as visual studio behaviour
+;; special home and end by Shan-leung Maverick WOO
+(global-set-key [home] 'My-smart-home)
+(global-set-key [end] 'My-smart-end)
+(defun My-smart-home ()
+  "Odd home to beginning of line, even home to beginning of text/code."
+  (interactive)
+  (if (and (eq last-command 'My-smart-home)
+	   (/= (line-beginning-position) (point)))
+      (beginning-of-line)
+    (beginning-of-line-text))
+  )
+(defun My-smart-end ()
+  "Odd end to end of line, even end to begin of text/code."
+  (interactive)
+  (if (and (eq last-command 'My-smart-end)
+           (= (line-end-position) (point)))
+      (end-of-line-text)
+    (end-of-line))
+  )
+(defun end-of-line-text ()
+  "Move to end of current line and skip comments and trailing space.
+Require `font-lock'."
+  (interactive)
+  (end-of-line)
+  (let ((bol (line-beginning-position)))
+    (unless (eq font-lock-comment-face (get-text-property bol 'face))
+      (while (and (/= bol (point))
+                  (eq font-lock-comment-face
+                      (get-text-property (point) 'face)))
+	(backward-char 1))
+      (unless (= (point) bol)
+	(forward-char 1) (skip-chars-backward " \t\n"))))
+  )
+
 ;;; Automatic indentation
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
+(setq indent-tabs-mode nil)
 
 (defun indent-buffer ()
   "Indent the current buffer"
@@ -119,13 +175,61 @@
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
-(add-to-list 'load-path "~/.emacs.d/rhtml")
-(require 'rhtml-mode)
-(add-hook 'rhtml-mode-hook (lambda () (rinari-launch)))
+;;(add-to-list 'load-path "~/.emacs.d/rhtml")
+;;(require 'rhtml-mode)
+;;(add-hook 'rhtml-mode-hook (lambda () (rinari-launch)))
 
 (require 'yasnippet-bundle)
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/snippets")
 
-(add-to-list 'load-path "~/.emacs.d/rinari")
-(require 'rinari)
+;;(add-to-list 'load-path "~/.emacs.d/rinari")
+;;(require 'rinari)
+
+(require 'haml-mode)
+(add-hook 'haml-mode-hook
+	  '(lambda ()
+	     (setq indent-tabs-mode nil)
+	     (define-key haml-mode-map "\C-m" 'newline-and-indent)))
+
+(require 'project-root)
+(setq project-roots
+      `(("Ruby Project"
+	 :root-contains-files ("Gemfile")
+	 :filename-regex ,(regexify-ext-list '(rb haml js css html)))))
+
+(defun my-ido-project-files ()
+  "Use ido to select a file from the project."
+  (interactive)
+  (let (my-project-root project-files tbl)
+    (unless project-details (project-root-fetch))
+    (setq my-project-root (cdr project-details))
+
+    ;; get project files
+    (setq project-files 
+	  (split-string 
+	   (shell-command-to-string 
+	    (concat "find "
+		    my-project-root
+		    " \\( -name \"*.svn\" -o -name \"*.git\" \\) -prune -o -type f -print | grep -E -v \"\.(pyc)$\""
+		    )) "\n"))
+    ;; populate hash table (display repr => path)
+    (setq tbl (make-hash-table :test 'equal))
+    (let (ido-list)
+      (mapc (lambda (path)
+
+	      ;; format path for display in ido list
+	      (setq key (replace-regexp-in-string "\\(.*?\\)\\([^/]+?\\)$" "\\2|\\1" path))
+	      ;; strip project root
+	      (setq key (replace-regexp-in-string my-project-root "" key))
+	      ;; remove trailing | or /
+	      (setq key (replace-regexp-in-string "\\(|\\|/\\)$" "" key))
+	      (puthash key path tbl)
+	      (push key ido-list)
+	      )
+	    project-files
+	    )
+      (find-file (gethash (ido-completing-read "project-files: " ido-list) tbl)))))
+
+;; bind to a key for quick access
+(define-key global-map [f6] 'my-ido-project-files)
