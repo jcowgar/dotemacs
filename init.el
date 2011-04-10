@@ -95,6 +95,18 @@ Require `font-lock'."
 	(forward-char 1) (skip-chars-backward " \t\n"))))
   )
 
+(defun dos-to-unix ()
+  "Convert the current buffer from DOS format to UNIX format"
+  (interactive)
+  (set-buffer-file-coding-system 'undecided-unix)
+  (save-buffer))
+
+(defun unix-to-dos ()
+  "Convert the current buffer from UNIX format to DOS format"
+  (interactive)
+  (set-buffer-file-coding-system 'undecided-dos)
+  (save-buffer))
+
 ;;; Automatic indentation
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
@@ -175,8 +187,8 @@ Require `font-lock'."
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
 
-;;(add-to-list 'load-path "~/.emacs.d/rhtml")
-;;(require 'rhtml-mode)
+(add-to-list 'load-path "~/.emacs.d/rhtml")
+(require 'rhtml-mode)
 ;;(add-hook 'rhtml-mode-hook (lambda () (rinari-launch)))
 
 (require 'yasnippet-bundle)
@@ -233,3 +245,25 @@ Require `font-lock'."
 
 ;; bind to a key for quick access
 (define-key global-map [f6] 'my-ido-project-files)
+
+(load-file "/usr/share/emacs/site-lisp/cedet/common/cedet.el")
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/ecb")
+(require 'ecb)
+(setq ecb-options-version "2.40")
+(setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
+
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(ecb-layout-name "left5")
+ '(ecb-layout-window-sizes (quote (("left5" (ecb-directories-buffer-name 0.18220338983050846 . 0.29310344827586204) (ecb-sources-buffer-name 0.18220338983050846 . 0.3448275862068966) (ecb-history-buffer-name 0.18220338983050846 . 0.3448275862068966)) ("left8" (ecb-directories-buffer-name 0.2711864406779661 . 0.29310344827586204) (ecb-sources-buffer-name 0.2711864406779661 . 0.2413793103448276) (ecb-methods-buffer-name 0.2711864406779661 . 0.27586206896551724) (ecb-history-buffer-name 0.2711864406779661 . 0.1724137931034483)))))
+ '(ecb-options-version "2.40")
+ '(ecb-source-path (quote (("/" "/") (#("/home/jeremy/projects/amps/tier2" 0 32 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu")) "AmpsTier2") ("/home/jeremy/projects/amps/tier2-rails" "AmpsTier2Rails")))))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ )
