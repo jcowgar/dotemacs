@@ -99,6 +99,7 @@ Require `font-lock'."
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
 (setq indent-tabs-mode nil)
+(setq tab-width 4)
 
 (defun indent-buffer ()
   "Indent the current buffer"
@@ -167,9 +168,22 @@ Require `font-lock'."
 
 ;;; Modes
 
+(require 'tea-time)
+(require 'task-timer)
+
+(define-key global-map "\C-ctt" 'tea-timer)
+(define-key global-map "\C-ctb" 'task-timer-begin)
+(define-key global-map "\C-cts" 'task-timer-status)
+
+(require 'go-mode-load)
+(add-hook 'go-mode-hook
+	  '(lambda ()
+	     (setq tab-width 3)))
+
 (add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
 (add-hook 'ruby-mode-hook
 	  '(lambda ()
+	     (setq tab-width 2)
 	     (local-set-key (kbd "RET") 'reindent-then-newline-and-indent)))
 
 (require 'yaml-mode)
@@ -209,7 +223,7 @@ Require `font-lock'."
     (setq project-files 
 	  (split-string 
 	   (shell-command-to-string 
-	    (concat "find "
+	    (concat "c:\\Development\\find "
 		    my-project-root
 		    " \\( -name \"*.svn\" -o -name \"*.git\" \\) -prune -o -type f -print | grep -E -v \"\.(pyc)$\""
 		    )) "\n"))
