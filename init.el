@@ -260,9 +260,11 @@ Require `font-lock'."
 ;; bind to a key for quick access
 (define-key global-map [f6] 'my-ido-project-files)
 
-(load-file "/usr/share/emacs/site-lisp/cedet/common/cedet.el")
-(add-to-list 'load-path "/usr/share/emacs/site-lisp/ecb")
+;(load-file "~/.emacs.d/cedet-1.0/common/cedet.el")
+(semantic-mode 1)
+(add-to-list 'load-path "~/.emacs.d/ecb")
 (require 'ecb)
+(require 'ecb-autoloads)
 (setq ecb-options-version "2.40")
 (setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
 

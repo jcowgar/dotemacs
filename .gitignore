@@ -3,4 +3,5 @@ rinari
 rhtml
 auto-save-list
 .project-roots
-
+*.elc
+*~
