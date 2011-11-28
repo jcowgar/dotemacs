@@ -60,26 +60,33 @@
 
 (delete-selection-mode)
 
+(defun get-line (num)
+  "Return the string content of line `num' relative to the current line"
+  (save-excursion
+    (next-line num)
+    (set-mark-command nil)
+    (end-of-line)
+    (buffer-substring-no-properties (mark) (point))))
+
 ;; Duplicate what is the same in the previous two lines
 (defun duplicate-similar ()
+  "Duplicate what is the same in the previous two lines from the current cursor column"
   (interactive)
-  (previous-line 2)
-  (setq first-line (current-line))
-  (next-line)
-  (setq second-line (current-line))
-  (next-line)
-  (setq start-index (current-column))
-  (setq end-index (compare-strings first-line start-index nil second-line start-index nil))
-  (if (not (integerp end-index))
-      (setq end-index (length first-line))
-    (setq end-index (- end-index 1)))
-  (unless (= end-index -1)
-    (insert-string (substring first-line start-index end-index))))
+  (let ((line1 (get-line -2))
+	(line2 (get-line -1)))
+  (setq end-index (compare-strings line1 0 nil
+				   line2 0 nil))
+  (cond ((symbolp end-index)
+	 (setq end-index (length line1)))
+	((> 0 end-index)
+	 (setq end-index (- (- end-index) 1)))
+	((< 0 end-index)
+	 (setq end-index (- end-index 1))))
+  (insert-string (substring line1 0 end-index))))
 
 ;; Redefine the Home/End keys to (nearly) the same as visual studio behaviour
 ;; special home and end by Shan-leung Maverick WOO
-(global-set-key [home] 'My-smart-home)
-(global-set-key [end] 'My-smart-end)
+
 (defun My-smart-home ()
   "Odd home to beginning of line, even home to beginning of text/code."
   (interactive)
@@ -88,6 +95,7 @@
       (beginning-of-line)
     (beginning-of-line-text))
   )
+
 (defun My-smart-end ()
   "Odd end to end of line, even end to begin of text/code."
   (interactive)
@@ -298,6 +306,11 @@ Require `font-lock'."
 (setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
 (setq ecb-layout-name "leftright1")
 (setq ecb-expand-methods-switch-off-auto-expand nil)
+
+;; Key bindings
+(global-set-key [home] 'My-smart-home)
+(global-set-key [end] 'My-smart-end)
+(global-set-key (kbd "<ESC>SPC") 'duplicate-similar)
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
