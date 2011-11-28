@@ -104,6 +104,7 @@
       (end-of-line-text)
     (end-of-line))
   )
+
 (defun end-of-line-text ()
   "Move to end of current line and skip comments and trailing space.
 Require `font-lock'."
@@ -220,10 +221,6 @@ Require `font-lock'."
 (require 'tea-time)
 (require 'task-timer)
 
-(define-key global-map "\C-ctt" 'tea-time)
-(define-key global-map "\C-ctb" 'task-timer-begin)
-(define-key global-map "\C-cts" 'task-timer-status)
-
 (require 'go-mode-load)
 (add-hook 'go-mode-hook
 	  '(lambda ()
@@ -246,57 +243,6 @@ Require `font-lock'."
 (yas/initialize)
 (yas/load-directory "~/.emacs.d/snippets")
 
-;;(add-to-list 'load-path "~/.emacs.d/rinari")
-;;(require 'rinari)
-
-(require 'haml-mode)
-(add-hook 'haml-mode-hook
-	  '(lambda ()
-	     (setq indent-tabs-mode nil)
-	     (define-key haml-mode-map "\C-m" 'newline-and-indent)))
-
-(require 'project-root)
-(setq project-roots
-      `(("Ruby Project"
-	 :root-contains-files ("Gemfile")
-	 :filename-regex ,(regexify-ext-list '(rb haml js css html)))))
-
-(defun my-ido-project-files ()
-  "Use ido to select a file from the project."
-  (interactive)
-  (let (my-project-root project-files tbl)
-    (unless project-details (project-root-fetch))
-    (setq my-project-root (cdr project-details))
-
-    ;; get project files
-    (setq project-files
-	  (split-string
-	   (shell-command-to-string
-	    (concat "c:\\Development\\find "
-		    my-project-root
-		    " \\( -name \"*.svn\" -o -name \"*.git\" \\) -prune -o -type f -print | grep -E -v \"\.(pyc)$\""
-		    )) "\n"))
-    ;; populate hash table (display repr => path)
-    (setq tbl (make-hash-table :test 'equal))
-    (let (ido-list)
-      (mapc (lambda (path)
-
-	      ;; format path for display in ido list
-	      (setq key (replace-regexp-in-string "\\(.*?\\)\\([^/]+?\\)$" "\\2|\\1" path))
-	      ;; strip project root
-	      (setq key (replace-regexp-in-string my-project-root "" key))
-	      ;; remove trailing | or /
-	      (setq key (replace-regexp-in-string "\\(|\\|/\\)$" "" key))
-	      (puthash key path tbl)
-	      (push key ido-list)
-	      )
-	    project-files
-	    )
-      (find-file (gethash (ido-completing-read "project-files: " ido-list) tbl)))))
-
-;; bind to a key for quick access
-(define-key global-map [f6] 'my-ido-project-files)
-
 ;(load-file "~/.emacs.d/cedet-1.0/common/cedet.el")
 (semantic-mode 1)
 (add-to-list 'load-path "~/.emacs.d/ecb")
@@ -311,21 +257,11 @@ Require `font-lock'."
 (global-set-key [home] 'My-smart-home)
 (global-set-key [end] 'My-smart-end)
 (global-set-key (kbd "<ESC>SPC") 'duplicate-similar)
+(define-key global-map "\C-ctt" 'tea-time)
+(define-key global-map "\C-ctb" 'task-timer-begin)
+(define-key global-map "\C-cts" 'task-timer-status)
 
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(ecb-expand-methods-switch-off-auto-expand nil)
- '(ecb-layout-name "leftright1")
  '(ecb-layout-window-sizes (quote (("leftright1" (ecb-directories-buffer-name 0.22127659574468084 . 0.3709677419354839) (ecb-sources-buffer-name 0.22127659574468084 . 0.3064516129032258) (ecb-history-buffer-name 0.22127659574468084 . 0.3064516129032258) (ecb-methods-buffer-name 0.2 . 0.9838709677419355)) ("left5" (ecb-directories-buffer-name 0.18220338983050846 . 0.29310344827586204) (ecb-sources-buffer-name 0.18220338983050846 . 0.3448275862068966) (ecb-history-buffer-name 0.18220338983050846 . 0.3448275862068966)) ("left8" (ecb-directories-buffer-name 0.2711864406779661 . 0.29310344827586204) (ecb-sources-buffer-name 0.2711864406779661 . 0.2413793103448276) (ecb-methods-buffer-name 0.2711864406779661 . 0.27586206896551724) (ecb-history-buffer-name 0.2711864406779661 . 0.1724137931034483)))))
- '(ecb-options-version "2.40")
- '(ecb-source-path (quote (("/" "/") (#("/home/jeremy/projects/amps/tier2" 0 32 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu")) "AmpsTier2") ("/home/jeremy/projects/amps/tier2-rails" "AmpsTier2Rails"))))
  '(show-trailing-whitespace t))
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- )
+(custom-set-faces)
