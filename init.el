@@ -68,20 +68,16 @@
     (end-of-line)
     (buffer-substring-no-properties (mark) (point))))
 
-;; Duplicate what is the same in the previous two lines
 (defun duplicate-similar ()
-  "Duplicate what is the same in the previous two lines from the current cursor column"
+  "Duplicate what is the same in the previous two lines from the current
+cursor column."
   (interactive)
   (let ((line1 (get-line -2))
 	(line2 (get-line -1)))
-  (setq end-index (compare-strings line1 0 nil
-				   line2 0 nil))
-  (cond ((symbolp end-index)
-	 (setq end-index (length line1)))
-	((> 0 end-index)
-	 (setq end-index (- (- end-index) 1)))
-	((< 0 end-index)
-	 (setq end-index (- end-index 1))))
+  (setq end-index (compare-strings line1 0 nil line2 0 nil))
+  (cond ((symbolp end-index) (setq end-index (length line1)))
+	((> 0 end-index)     (setq end-index (- (- end-index) 1)))
+	((< 0 end-index)     (setq end-index (- end-index 1))))
   (insert-string (substring line1 0 end-index))))
 
 ;; Redefine the Home/End keys to (nearly) the same as visual studio behaviour
