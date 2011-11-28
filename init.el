@@ -7,7 +7,7 @@
 ;; Private settings such as email addresses, (gulp) clear-text passwords, ...
 ;;
 
-(load "~/.emacs.d/private.el")
+;(load "~/.emacs.d/private.el")
 
 ;;
 
@@ -59,6 +59,22 @@
 (set-face-background 'hl-line "#eff")
 
 (delete-selection-mode)
+
+;; Duplicate what is the same in the previous two lines
+(defun duplicate-similar ()
+  (interactive)
+  (previous-line 2)
+  (setq first-line (current-line))
+  (next-line)
+  (setq second-line (current-line))
+  (next-line)
+  (setq start-index (current-column))
+  (setq end-index (compare-strings first-line start-index nil second-line start-index nil))
+  (if (not (integerp end-index))
+      (setq end-index (length first-line))
+    (setq end-index (- end-index 1)))
+  (unless (= end-index -1)
+    (insert-string (substring first-line start-index end-index))))
 
 ;; Redefine the Home/End keys to (nearly) the same as visual studio behaviour
 ;; special home and end by Shan-leung Maverick WOO
@@ -143,6 +159,19 @@ Require `font-lock'."
 		(let ((mark-even-if-inactive transient-mark-mode))
 		  (indent-region (region-beginning) (region-end) nil))))))
 
+;; Line handling
+(setq show-trailing-whitespace t)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'find-file-hook 'find-file-check-line-endings)
+
+(defun dos-file-endings-p ()
+  (string-match "dos" (symbol-name buffer-file-coding-system)))
+
+(defun find-file-check-line-endings ()
+  (when (dos-file-endings-p)
+    (setq show-trailing-whitespace t)
+    (set-buffer-file-coding-system 'undecided-unix)
+    (set-buffer-modified-p nil)))
 
 ;;; Backup
 
@@ -183,7 +212,7 @@ Require `font-lock'."
 (require 'tea-time)
 (require 'task-timer)
 
-(define-key global-map "\C-ctt" 'tea-timer)
+(define-key global-map "\C-ctt" 'tea-time)
 (define-key global-map "\C-ctb" 'task-timer-begin)
 (define-key global-map "\C-cts" 'task-timer-status)
 
@@ -232,9 +261,9 @@ Require `font-lock'."
     (setq my-project-root (cdr project-details))
 
     ;; get project files
-    (setq project-files 
-	  (split-string 
-	   (shell-command-to-string 
+    (setq project-files
+	  (split-string
+	   (shell-command-to-string
 	    (concat "c:\\Development\\find "
 		    my-project-root
 		    " \\( -name \"*.svn\" -o -name \"*.git\" \\) -prune -o -type f -print | grep -E -v \"\.(pyc)$\""
@@ -267,16 +296,20 @@ Require `font-lock'."
 (require 'ecb-autoloads)
 (setq ecb-options-version "2.40")
 (setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
+(setq ecb-layout-name "leftright1")
+(setq ecb-expand-methods-switch-off-auto-expand nil)
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(ecb-layout-name "left5")
- '(ecb-layout-window-sizes (quote (("left5" (ecb-directories-buffer-name 0.18220338983050846 . 0.29310344827586204) (ecb-sources-buffer-name 0.18220338983050846 . 0.3448275862068966) (ecb-history-buffer-name 0.18220338983050846 . 0.3448275862068966)) ("left8" (ecb-directories-buffer-name 0.2711864406779661 . 0.29310344827586204) (ecb-sources-buffer-name 0.2711864406779661 . 0.2413793103448276) (ecb-methods-buffer-name 0.2711864406779661 . 0.27586206896551724) (ecb-history-buffer-name 0.2711864406779661 . 0.1724137931034483)))))
+ '(ecb-expand-methods-switch-off-auto-expand nil)
+ '(ecb-layout-name "leftright1")
+ '(ecb-layout-window-sizes (quote (("leftright1" (ecb-directories-buffer-name 0.22127659574468084 . 0.3709677419354839) (ecb-sources-buffer-name 0.22127659574468084 . 0.3064516129032258) (ecb-history-buffer-name 0.22127659574468084 . 0.3064516129032258) (ecb-methods-buffer-name 0.2 . 0.9838709677419355)) ("left5" (ecb-directories-buffer-name 0.18220338983050846 . 0.29310344827586204) (ecb-sources-buffer-name 0.18220338983050846 . 0.3448275862068966) (ecb-history-buffer-name 0.18220338983050846 . 0.3448275862068966)) ("left8" (ecb-directories-buffer-name 0.2711864406779661 . 0.29310344827586204) (ecb-sources-buffer-name 0.2711864406779661 . 0.2413793103448276) (ecb-methods-buffer-name 0.2711864406779661 . 0.27586206896551724) (ecb-history-buffer-name 0.2711864406779661 . 0.1724137931034483)))))
  '(ecb-options-version "2.40")
- '(ecb-source-path (quote (("/" "/") (#("/home/jeremy/projects/amps/tier2" 0 32 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu")) "AmpsTier2") ("/home/jeremy/projects/amps/tier2-rails" "AmpsTier2Rails")))))
+ '(ecb-source-path (quote (("/" "/") (#("/home/jeremy/projects/amps/tier2" 0 32 (help-echo "Mouse-2 toggles maximizing, mouse-3 displays a popup-menu")) "AmpsTier2") ("/home/jeremy/projects/amps/tier2-rails" "AmpsTier2Rails"))))
+ '(show-trailing-whitespace t))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
