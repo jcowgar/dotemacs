@@ -217,22 +217,30 @@ Require `font-lock'."
 (require 'tea-time)
 (require 'task-timer)
 
-(require 'go-mode-load)
-(add-hook 'go-mode-hook
-	  '(lambda ()
-	     (setq tab-width 3)))
+(add-to-list 'load-path "~/.emacs.d/multiple-cursors")
+(require 'multiple-cursors)
 
-(add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
-(add-hook 'ruby-mode-hook
-	  '(lambda ()
-	     (setq tab-width 2)
-	     (local-set-key (kbd "RET") 'reindent-then-newline-and-indent)))
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
-(require 'yaml-mode)
-(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-
-(add-to-list 'load-path "~/.emacs.d/rhtml")
-(require 'rhtml-mode)
+;;(require 'go-mode-load)
+;;(add-hook 'go-mode-hook
+;;	  '(lambda ()
+;;	     (setq tab-width 3)))
+;;
+;;(add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
+;;(add-hook 'ruby-mode-hook
+;;	  '(lambda ()
+;;	     (setq tab-width 2)
+;;	     (local-set-key (kbd "RET") 'reindent-then-newline-and-indent)))
+;;
+;;(require 'yaml-mode)
+;;(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+;;
+;;(add-to-list 'load-path "~/.emacs.d/rhtml")
+;;(require 'rhtml-mode)
 ;;(add-hook 'rhtml-mode-hook (lambda () (rinari-launch)))
 
 (require 'yasnippet-bundle)
