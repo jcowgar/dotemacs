@@ -1,5 +1,9 @@
 ;;; init.el --- Jeremy's Emacs Configuration
 ;;;
+;;;
+;;; TODO
+;;;   * Code completion
+;;;
 
 ;;; Code:
 
@@ -9,6 +13,15 @@
 
 ;(load "~/.emacs.d/private.el")
 
+(require 'package)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+			 ("marmalade" . "http://marmalade-repo.org/packages/")
+			 ("melpa" . "http://melpa.milkbox.net/packages/")))
+(package-initialize)
+
+;;
+;; Install packages:
+;;    magit, tea-time, helm, multiple-cursors, yasnippet, jade-mode
 ;;
 
 (defun load-my-init ()
@@ -22,6 +35,8 @@
 
 (if (eq system-type "windows-nt")
     (setq default-directory "C:/Development/Projects"))
+(if (eq system-type "darwin")
+    (setq default-directory "/Users/jeremy/Projects"))
 (setq global-font-lock-mode t)
 (setq generic-define-unix-modes t)
 (setq column-number-mode t)
@@ -217,7 +232,7 @@ Require `font-lock'."
 (require 'tea-time)
 (require 'task-timer)
 
-(add-to-list 'load-path "~/.emacs.d/multiple-cursors")
+;;;(add-to-list 'load-path "~/.emacs.d/multiple-cursors")
 (require 'multiple-cursors)
 
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
@@ -225,37 +240,9 @@ Require `font-lock'."
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
-;;(require 'go-mode-load)
-;;(add-hook 'go-mode-hook
-;;	  '(lambda ()
-;;	     (setq tab-width 3)))
-;;
-;;(add-to-list 'auto-mode-alist '("Gemfile" . ruby-mode))
-;;(add-hook 'ruby-mode-hook
-;;	  '(lambda ()
-;;	     (setq tab-width 2)
-;;	     (local-set-key (kbd "RET") 'reindent-then-newline-and-indent)))
-;;
-;;(require 'yaml-mode)
-;;(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-;;
-;;(add-to-list 'load-path "~/.emacs.d/rhtml")
-;;(require 'rhtml-mode)
-;;(add-hook 'rhtml-mode-hook (lambda () (rinari-launch)))
-
-(require 'yasnippet-bundle)
-(yas/initialize)
+(require 'yasnippet)
 (yas/load-directory "~/.emacs.d/snippets")
-
-;(load-file "~/.emacs.d/cedet-1.0/common/cedet.el")
-(semantic-mode 1)
-(add-to-list 'load-path "~/.emacs.d/ecb")
-(require 'ecb)
-(require 'ecb-autoloads)
-(setq ecb-options-version "2.40")
-(setq ecb-primary-secondary-mouse-buttons 'mouse-1--mouse-2)
-(setq ecb-layout-name "leftright1")
-(setq ecb-expand-methods-switch-off-auto-expand nil)
+(yas-global-mode 1)
 
 ;; Key bindings
 (global-set-key [home] 'My-smart-home)
