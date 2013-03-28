@@ -1,0 +1,4 @@
+#name: django DateTimeField : ...
+#key: mf
+# --
+${1:name} = models.DateTimeField(${2:blank=True, null=True}$3)$0

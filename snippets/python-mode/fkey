@@ -1,0 +1,4 @@
+#name: django ForeignKey : ...
+#key: mf
+# --
+${1:name} = models.ForeignKey('${2:ClassName}'${3:, blank=True, null=True}$4)$0
