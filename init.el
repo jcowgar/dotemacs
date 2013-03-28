@@ -1,9 +1,5 @@
 ;;; init.el --- Jeremy's Emacs Configuration
 ;;;
-;;;
-;;; TODO
-;;;   * Code completion
-;;;
 
 ;;; Code:
 
@@ -19,11 +15,6 @@
 			 ("melpa" . "http://melpa.milkbox.net/packages/")))
 (package-initialize)
 
-;;
-;; Install packages:
-;;    magit, tea-time, helm, multiple-cursors, yasnippet, jade-mode
-;;
-
 (defun load-my-init ()
   "Load my custom emacs init.el"
   (interactive)
@@ -33,10 +24,12 @@
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-(if (eq system-type "windows-nt")
-    (setq default-directory "C:/Development/Projects"))
-(if (eq system-type "darwin")
-    (setq default-directory "/Users/jeremy/Projects"))
+(cond ((eq system-type 'windows-nt)
+       (setq default-directory "C:/Development/Projects"))
+      ((eq system-type 'darwin)
+       (add-to-list 'default-frame-alist '(font . "-apple-Menlo-medium-normal-normal-*-14-*-*-*-m-0-iso10646-1"))
+       (setq default-directory "/Users/jeremy/Projects")))
+
 (setq global-font-lock-mode t)
 (setq generic-define-unix-modes t)
 (setq column-number-mode t)
@@ -49,6 +42,7 @@
 (setq scroll-margin 0
       scroll-conservatively 100000
       scroll-preserve-screen-position 1)
+
 ;; Page down/up move the point, not the screen.
 ;; In practice, this means that they can move the
 ;; point to the beginning or end of the buffer.
@@ -61,19 +55,6 @@
 		(lambda () (interactive)
 		  (condition-case nil (scroll-down)
 		    (beginning-of-buffer (goto-char (point-min))))))
-
-;;; (ido-mode 1) ; First few days use just couldn't get use to it.
-(setq show-trailing-whitespace t)
-(setq indicate-empty-lines t)
-
-(put 'downcase-region 'disabled nil)
-(put 'upcase-region 'disabled nil)
-(put 'capitalize-region 'disabled nil)
-
-(global-hl-line-mode t)
-(set-face-background 'hl-line "#eff")
-
-(delete-selection-mode)
 
 (defun get-line (num)
   "Return the string content of line `num' relative to the current line"
@@ -145,10 +126,6 @@ Require `font-lock'."
 
 ;;; Automatic indentation
 
-(define-key global-map (kbd "RET") 'newline-and-indent)
-(setq indent-tabs-mode nil)
-(setq tab-width 4)
-
 (defun indent-buffer ()
   "Indent the current buffer"
   (interactive)
@@ -178,20 +155,6 @@ Require `font-lock'."
 						     plain-tex-mode))
 		(let ((mark-even-if-inactive transient-mark-mode))
 		  (indent-region (region-beginning) (region-end) nil))))))
-
-;; Line handling
-(setq show-trailing-whitespace t)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-(add-hook 'find-file-hook 'find-file-check-line-endings)
-
-(defun dos-file-endings-p ()
-  (string-match "dos" (symbol-name buffer-file-coding-system)))
-
-(defun find-file-check-line-endings ()
-  (when (dos-file-endings-p)
-    (setq show-trailing-whitespace t)
-    (set-buffer-file-coding-system 'undecided-unix)
-    (set-buffer-modified-p nil)))
 
 ;;; Backup
 
@@ -231,28 +194,50 @@ Require `font-lock'."
 
 (require 'tea-time)
 (require 'task-timer)
-
-;;;(add-to-list 'load-path "~/.emacs.d/multiple-cursors")
 (require 'multiple-cursors)
-
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-
+(require 'helm-config)
 (require 'yasnippet)
 (yas/load-directory "~/.emacs.d/snippets")
 (yas-global-mode 1)
 
+;;; General configuration
+
+; (ido-mode 1) ; First few days use just couldn't get use to it.
+
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+(put 'capitalize-region 'disabled nil)
+(global-hl-line-mode t)
+(set-face-background 'hl-line "#eff")
+(delete-selection-mode)
+(setq show-trailing-whitespace t)
+(setq indicate-empty-lines t)
+(setq indent-tabs-mode nil)
+(setq tab-width 4)
+
+(defun dos-file-endings-p ()
+  (string-match "dos" (symbol-name buffer-file-coding-system)))
+
+(defun find-file-check-line-endings ()
+  (when (dos-file-endings-p)
+    (setq show-trailing-whitespace t)
+    (set-buffer-file-coding-system 'undecided-unix)
+    (set-buffer-modified-p nil)))
+
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'find-file-hook 'find-file-check-line-endings)
+
 ;; Key bindings
+(global-set-key (kbd "RET") 'newline-and-indent)
 (global-set-key [home] 'My-smart-home)
 (global-set-key [end] 'My-smart-end)
 (global-set-key (kbd "<ESC>SPC") 'duplicate-similar)
-(define-key global-map "\C-ctt" 'tea-time)
-(define-key global-map "\C-ctb" 'task-timer-begin)
-(define-key global-map "\C-cts" 'task-timer-status)
-
-(custom-set-variables
- '(ecb-layout-window-sizes (quote (("leftright1" (ecb-directories-buffer-name 0.22127659574468084 . 0.3709677419354839) (ecb-sources-buffer-name 0.22127659574468084 . 0.3064516129032258) (ecb-history-buffer-name 0.22127659574468084 . 0.3064516129032258) (ecb-methods-buffer-name 0.2 . 0.9838709677419355)) ("left5" (ecb-directories-buffer-name 0.18220338983050846 . 0.29310344827586204) (ecb-sources-buffer-name 0.18220338983050846 . 0.3448275862068966) (ecb-history-buffer-name 0.18220338983050846 . 0.3448275862068966)) ("left8" (ecb-directories-buffer-name 0.2711864406779661 . 0.29310344827586204) (ecb-sources-buffer-name 0.2711864406779661 . 0.2413793103448276) (ecb-methods-buffer-name 0.2711864406779661 . 0.27586206896551724) (ecb-history-buffer-name 0.2711864406779661 . 0.1724137931034483)))))
- '(show-trailing-whitespace t))
-(custom-set-faces)
+(global-set-key (kbd "C-c t t") 'tea-time)
+(global-set-key (kbd "C-c t b") 'task-timer-begin)
+(global-set-key (kbd "C-c t s") 'task-timer-status)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "<ESC><ESC>s") 'magit-status)
+(global-set-key (kbd "<ESC><ESC>p") 'magit-push)
