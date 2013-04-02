@@ -1,0 +1,4 @@
+#name: django DecimalField : ...
+#key: mf
+# --
+${1:name} = models.DecimalField(max_digits=${2:12}, decimal_places=${3:2}${4:, blank=True, null=True}$5)$0

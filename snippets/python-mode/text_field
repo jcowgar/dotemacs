@@ -1,0 +1,4 @@
+#name: django TextField : ...
+#key: mf
+# --
+${1:name} = models.TextField(${2:blank=True, null=True}$3)$0

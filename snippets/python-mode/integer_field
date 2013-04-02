@@ -1,0 +1,4 @@
+#name: django IntegerField : ...
+#key: mf
+# --
+${1:name} = models.IntegerField(${2:blank=True, null=True}$3)$0

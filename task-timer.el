@@ -25,8 +25,6 @@
 
 ;;; Requirements:
 
-;; Only tested on Emacs 23
-
 ;;; Installation:
 
 ;; Add below code in your .emacs
@@ -36,12 +34,13 @@
 ;;; Usage:
 ;;
 ;; 1. Interactively call (task-timer-start) to start the timer
-;; 2. Interactively call (task-timer-stop) to stop the timer.
-;;    Upon stopping, the duration will be displayed in the status bar
+;; 2. Interactively call (task-timer-status) to query as to how
+;;    long the timer has been running. There is no real need to
+;;    stop the timer, to restart the timer just start it again.
 ;;
 ;; Suggested binding:
-;; (define-key global-map "\C-ctb" 'task-timer-begin)
-;; (define-key global-map "\C-cts" 'task-timer-status)
+;;   (define-key global-map "\C-ctb" 'task-timer-begin)
+;;   (define-key global-map "\C-cts" 'task-timer-status)
 ;;
 
 (defun task-timer-begin ()
@@ -56,4 +55,5 @@
     (message "%d min %d sec" remaining-minutes remaining-seconds)))
 
 (provide 'task-timer)
+
 ;;; task-timer ends here

@@ -1,0 +1,4 @@
+#name: django CharField : ...
+#key: mf
+# --
+${1:name} = models.CharField(max_length=${2:length}${3:, blank=True, null=True}$4)$0
